@@ -62,7 +62,7 @@ static ssize_t tftp_send_data(struct tftp_client *client,
 {
 	ssize_t len;
 	size_t send_len;
-	char *buf = client->blk_buf;
+	char *buf = (char *) client->blk_buf;
 	char *p = buf;
 
 	*p++ = 0;
