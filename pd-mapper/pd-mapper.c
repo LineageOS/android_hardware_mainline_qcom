@@ -209,13 +209,19 @@ static int concat_path(char *base_path, char *firmware_path, char *path)
 #ifndef ANDROID
 #define FIRMWARE_BASE	"/lib/firmware/"
 #define FIRMWARE_PARAM_PATH	"/sys/module/firmware_class/parameters/path"
+#else
+#define FIRMWARE_BASE	"/vendor/firmware/"
+#endif
 
 static DIR *opendir_firmware(char *firmware_path, char *out_path_opened)
 {
-	int ret = 0, n;
+	int ret = 0;
 	DIR *fw_dir = NULL;
-	int fw_param_path = open(FIRMWARE_PARAM_PATH, O_RDONLY);
 	char fw_sysfs_path[PATH_MAX];
+
+#ifndef ANDROID
+	int n;
+	int fw_param_path = open(FIRMWARE_PARAM_PATH, O_RDONLY);
 
 	if (fw_param_path < 0) {
 		warn("Cannot open sysfs path: %s", FIRMWARE_PARAM_PATH);
@@ -242,6 +248,7 @@ static DIR *opendir_firmware(char *firmware_path, char *out_path_opened)
 
 	return fw_dir;
 err:
+#endif
 	ret = concat_path(fw_sysfs_path, FIRMWARE_BASE, out_path_opened);
 	if (ret)
 		return fw_dir;
@@ -252,14 +259,6 @@ err:
 
 	return fw_dir;
 }
-#else
-#define FIRMWARE_BASE	"/vendor/firmware/"
-
-DIR opendir_firmware(char *firmware_path)
-{
-	return open_concat_path("/vendor/firmware/", firmware_path);
-}
-#endif
 
 static char *known_extensions[] = {
   ".jsn.xz",
