@@ -199,3 +199,7 @@ func (p *pilSquasher) AndroidMkEntries() []android.AndroidMkEntries {
 	},
 	}
 }
+
+func (p *pilSquasher) DepsMutator(ctx android.BottomUpMutatorContext) {
+	ctx.AddHostToolDependencies("pil-squasher")
+}
